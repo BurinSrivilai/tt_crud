@@ -1,0 +1,133 @@
+﻿@model IEnumerable<tt_crud.Models.master_model>
+
+@{
+    ViewBag.Title = "SelectTT";
+}
+
+@*<h2>SelectTT</h2>*@
+
+<br />
+<p>
+    @*@Html.ActionLink("Create New", "Create")*@
+    <input type="button" class="btn btn-primary" value="Create New" onclick="location.href='@Url.Action("Create", "CRUD")'" />
+
+</p>
+<table class="table">
+    <tr>
+        <th>
+            ID
+        </th>
+        <th>
+            HN เจ้าของ
+        </th>
+        <th>
+            ชื่อเจ้าของ
+        </th>
+
+        <th>
+            เบอร์โทรศัพท์
+        </th>
+        <th>
+            ที่อยู่อีเมลล์
+        </th>
+        <th>Edit / Delete</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.MT_ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MT_HN)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MT_Fname)  @Html.DisplayFor(modelItem => item.MT_Lname)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.MT_Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MT_Email)
+            </td>
+            <td>
+
+                <input type="button" class="btn btn-info" value="Edit" onclick="location.href='@Url.Action("Edit", "CRUD",new {MT_ID = item.MT_ID })'" />
+
+                @*<input type="button" class="btn btn-danger" value="Delete" onclick="location.href='@Url.Action("Delete", "CRUD",new {MT_ID = item.MT_ID })'" />*@
+                <input type="button" class="btn btn-danger" value="Delete" onclick="btn_delete(@item.MT_ID)" />
+
+            </td>
+        </tr>
+    }
+
+</table>
+
+
+
+<script>
+    function btn_delete(MT_ID) {
+
+        Swal.fire({
+            title: "แจ้งเตือน !",
+            text: "ต้องการลบข้อมูลใช่หรือไม่ ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: "บันทึก",
+            cancelButtonText: "ยกเลิก",
+            allowOutsideClick: false,
+            allowEscapeKey: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Delete", "CRUD" )",
+                    data: "{MT_ID : " + MT_ID+" }",
+                    contentType: "application/json;charset=utf-8",
+                    serverSide: true,
+                    success: function (data) {
+                        if (data.message != "success") {
+                            FireError(data.message);
+                        } else {
+                            FireSuccess("ลบข้อมูลสำเร็จ");
+                        }
+                    },
+                    error: function (response) {
+                        FireSuccess(response.data);
+                    }
+                });
+            }
+        });
+
+    }
+
+    function FireError(txt) {
+        Swal.fire({
+            icon: 'error',
+            title: 'ผิดพลาด !',
+            text: txt,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            confirmButtonText: "ตกลง",
+        });
+    }
+    function FireSuccess(txt) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: txt,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            confirmButtonText: "ตกลง",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                location.reload();
+            }
+        });
+
+    }
+</script>
